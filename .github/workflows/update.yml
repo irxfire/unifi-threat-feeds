@@ -27,12 +27,14 @@ jobs:
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
 
-          git add spamhaus-unifi.txt
+          git add *.txt
 
           git diff --staged --quiet
+
           if ($LASTEXITCODE -eq 0) {
             Write-Host "No changes."
-          } else {
-            git commit -m "Update Spamhaus feed"
+          }
+          else {
+            git commit -m "Update Spamhaus feeds"
             git push
           }
