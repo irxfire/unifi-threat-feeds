@@ -1,4 +1,4 @@
-name: Update Spamhaus Feed
+name: Update Spamhaus Feeds
 
 on:
   workflow_dispatch:
@@ -13,15 +13,15 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout Repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run Script
+      - name: Run Spamhaus Update Script
         shell: powershell
         run: |
           ./update-spamhaus.ps1
 
-      - name: Commit Changes
+      - name: Commit and Push Changes
         shell: powershell
         run: |
           git config user.name "GitHub Action"
@@ -35,6 +35,6 @@ jobs:
             Write-Host "No changes."
           }
           else {
-            git commit -m "Update Spamhaus feeds"
+            git commit -m "Update Spamhaus IPv4 and IPv6 feeds"
             git push
           }
