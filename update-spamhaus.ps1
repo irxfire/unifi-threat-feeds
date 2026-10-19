@@ -1,10 +1,19 @@
-$url = "https://www.spamhaus.org/drop/drop.txt"
+# IPv4 Feed
+$ipv4Url = "https://www.spamhaus.org/drop/drop.txt"
 
-try {
+# IPv6 Feed
+$ipv6Url = "https://www.spamhaus.org/drop/dropv6.txt"
+
+function Get-CleanSpamhausFeed {
+    param (
+        [string]$Url,
+        [string]$OutputFile
+    )
+
     $client = New-Object System.Net.WebClient
     $client.Headers.Add("User-Agent", "Mozilla/5.0")
 
-    $content = $client.DownloadString($url)
+    $content = $client.DownloadString($Url)
 
     $clean = $content -split "`n" |
         ForEach-Object { $_.Trim() } |
@@ -16,10 +25,20 @@ try {
             ($_ -split ";")[0].Trim()
         }
 
-    $clean | Set-Content "spamhaus-unifi.txt"
+    $clean | Set-Content $OutputFile
 
-    Write-Host "Created spamhaus-unifi.txt"
+    Write-Host "Created $OutputFile"
     Write-Host "Entries: $($clean.Count)"
+}
+
+try {
+    Get-CleanSpamhausFeed `
+        -Url $ipv4Url `
+        -OutputFile "spamhaus-unifi.txt"
+
+    Get-CleanSpamhausFeed `
+        -Url $ipv6Url `
+        -OutputFile "spamhaus-unifi-v6.txt"
 }
 catch {
     Write-Host "ERROR:"
