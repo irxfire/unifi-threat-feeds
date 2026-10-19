@@ -52,3 +52,10 @@ Recommended update interval:
 This repository is not affiliated with Spamhaus or Ubiquiti.
 
 Threat intelligence data remains the property of Spamhaus and is redistributed here only in a normalized format for firewall consumption.
+
+## Technologies Used
+
+- GitHub Actions
+- PowerShell
+- UniFi Network Lists
+- Spamhaus DROP Feed
