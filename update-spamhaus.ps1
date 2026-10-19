@@ -1,27 +1,28 @@
-# Spamhaus DROP list URL
 $url = "https://www.spamhaus.org/drop/drop.txt"
 
-# Download the file
-$response = Invoke-WebRequest `
-    -Uri $url `
-    -Headers @{ "User-Agent" = "Mozilla/5.0" }
+try {
+    $client = New-Object System.Net.WebClient
+    $client.Headers.Add("User-Agent", "Mozilla/5.0")
 
-# Get content
-$content = $response.Content
+    $content = $client.DownloadString($url)
 
-# Clean the list
-$clean = $content -split "`n" |
-    ForEach-Object { $_.Trim() } |
-    Where-Object {
-        $_ -ne "" -and
-        -not $_.StartsWith(";")
-    } |
-    ForEach-Object {
-        ($_ -split ";")[0].Trim()
-    }
+    $clean = $content -split "`n" |
+        ForEach-Object { $_.Trim() } |
+        Where-Object {
+            $_ -ne "" -and
+            -not $_.StartsWith(";")
+        } |
+        ForEach-Object {
+            ($_ -split ";")[0].Trim()
+        }
 
-# Write output file
-$clean | Set-Content "spamhaus-unifi.txt"
+    $clean | Set-Content "spamhaus-unifi.txt"
 
-# Display count
-Write-Host "Created spamhaus-unifi.txt with $($clean.Count) entries"
+    Write-Host "Created spamhaus-unifi.txt"
+    Write-Host "Entries: $($clean.Count)"
+}
+catch {
+    Write-Host "ERROR:"
+    Write-Host $_.Exception.Message
+    throw
+}
