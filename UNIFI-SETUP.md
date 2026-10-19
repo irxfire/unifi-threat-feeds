@@ -1,80 +1,241 @@
 # UniFi Setup Guide
 
-This guide explains how to use the cleaned Spamhaus DROP feed with UniFi Network Lists.
+This guide explains how to configure UniFi Dynamic Network Lists using the processed Spamhaus DROP feeds provided by this repository.
 
-## Problem
+---
 
-The native Spamhaus DROP feed includes comments and metadata on each line.
+# Overview
 
-Example:
+The feeds in this repository are automatically updated daily and formatted specifically for UniFi compatibility.
 
-```text
-1.10.16.0/20 ; SBL388485
-1.19.0.0/16 ; SBL388486
-```
+Available feeds:
 
-Current UniFi Network Lists may only import the first entry from this format.
-
-This repository automatically removes comments and publishes a UniFi-compatible list.
-
-## Step 1: Create a Dynamic Network List
-
-In UniFi Network:
-
-1. Go to **Settings**
-2. Select **Policy Engine**
-3. Select **Network Lists**
-4. Click **Create New List**
-
-Configure:
-
-- Name: Spamhaus IPv4 DROP List
-- Type: IPv4
-- Source: Dynamic
-
-URL:
+## IPv4
 
 ```text
 https://raw.githubusercontent.com/irxfire/unifi-threat-feeds/main/spamhaus-unifi.txt
 ```
 
-Update Interval:
+## IPv6
+
+```text
+https://raw.githubusercontent.com/irxfire/unifi-threat-feeds/main/spamhaus-unifi-v6.txt
+```
+
+---
+
+# Requirements
+
+- UniFi Network application with support for Dynamic Network Lists
+- UniFi Gateway (UDM Pro, UDM Pro Max, UDM SE, UXG, etc.)
+- Internet connectivity from the UniFi Gateway
+- UniFi administrator access
+
+---
+
+# Configure the IPv4 Network List
+
+## Step 1
+
+Open the UniFi Network application.
+
+Navigate to:
+
+```text
+Settings
+  └─ Policy Engine
+       └─ Network Lists
+```
+
+Click:
+
+```text
+Create New List
+```
+
+---
+
+## Step 2
+
+Configure the list.
+
+### Name
+
+```text
+Spamhaus IPv4 DROP List
+```
+
+### Type
+
+```text
+IPv4
+```
+
+### Source
+
+```text
+Dynamic
+```
+
+### URL
+
+```text
+https://raw.githubusercontent.com/irxfire/unifi-threat-feeds/main/spamhaus-unifi.txt
+```
+
+### Update Interval
 
 ```text
 24 Hours
 ```
 
-Click **Save**.
+Click:
 
-## Step 2: Verify Import
+```text
+Save
+```
 
-Select the new list and click:
+---
+
+## Step 3
+
+Select the newly created list and click:
 
 ```text
 Update Now
 ```
 
-You should see approximately 1,600+ IPv4 network entries imported.
+After synchronization, verify that the list contains approximately:
 
-## Step 3: Create a Firewall Rule
+```text
+1,600+ entries
+```
+
+The exact number will vary as Spamhaus updates the feed.
+
+---
+
+# Configure the IPv6 Network List
+
+## Step 1
 
 Navigate to:
 
 ```text
-Settings → Policy Engine → Firewall Rules
+Settings
+  └─ Policy Engine
+       └─ Network Lists
 ```
 
-Create a new rule:
+Click:
 
-### Rule Settings
+```text
+Create New List
+```
 
-Action:
+---
+
+## Step 2
+
+Configure the list.
+
+### Name
+
+```text
+Spamhaus IPv6 DROP List
+```
+
+### Type
+
+```text
+IPv6
+```
+
+### Source
+
+```text
+Dynamic
+```
+
+### URL
+
+```text
+https://raw.githubusercontent.com/irxfire/unifi-threat-feeds/main/spamhaus-unifi-v6.txt
+```
+
+### Update Interval
+
+```text
+24 Hours
+```
+
+Click:
+
+```text
+Save
+```
+
+---
+
+## Step 3
+
+Select the newly created list and click:
+
+```text
+Update Now
+```
+
+You should see approximately:
+
+```text
+90+ entries
+```
+
+The exact number will vary as Spamhaus updates the feed.
+
+---
+
+# Create the IPv4 Firewall Rule
+
+Navigate to:
+
+```text
+Settings
+  └─ Policy Engine
+       └─ Firewall Rules
+```
+
+Click:
+
+```text
+Create Rule
+```
+
+---
+
+## General Settings
+
+### Name
+
+```text
+Block Spamhaus IPv4
+```
+
+### Action
 
 ```text
 Block
 ```
 
-### Source
+### Enable Logging
+
+Optional but recommended.
+
+---
+
+## Source Settings
+
+### Traffic From
 
 ```text
 Internet
@@ -86,10 +247,64 @@ Internet
 IP List
 ```
 
-### List
+### Source List
 
 ```text
 Spamhaus IPv4 DROP List
+```
+
+---
+
+## Destination Settings
+
+```text
+Any
+```
+
+---
+
+## Protocol
+
+```text
+All
+```
+
+Save the rule.
+
+---
+
+# Create the IPv6 Firewall Rule
+
+If IPv6 is enabled on your network, create a corresponding IPv6 rule.
+
+### Name
+
+```text
+Block Spamhaus IPv6
+```
+
+### Action
+
+```text
+Block
+```
+
+### Traffic From
+
+```text
+Internet
+```
+
+### Source Type
+
+```text
+IP List
+```
+
+### Source List
+
+```text
+Spamhaus IPv6 DROP List
 ```
 
 ### Destination
@@ -104,26 +319,84 @@ Any
 All
 ```
 
-Enable logging if desired.
-
 Save the rule.
 
-## Result
+---
 
-Traffic originating from networks listed in the Spamhaus DROP feed will be blocked by the UniFi Gateway.
+# Verification
 
-## Feed Information
+After creating the lists and firewall rules:
 
-Source Feed:
+1. Confirm the Network Lists successfully update.
+2. Verify the entry counts are populated.
+3. Confirm the firewall rules are enabled.
+4. Optionally enable logging on the rules and review UniFi logs for blocked traffic.
 
+---
+
+# Troubleshooting
+
+## Only One Entry Is Imported
+
+This typically occurs when UniFi is pointed directly at the native Spamhaus feed:
+
+```text
 https://www.spamhaus.org/drop/drop.txt
+```
 
-Processed Feed:
+Use the processed feed from this repository instead:
 
+```text
 https://raw.githubusercontent.com/irxfire/unifi-threat-feeds/main/spamhaus-unifi.txt
+```
 
-## Disclaimer
+---
+
+## Network List Does Not Update
+
+Verify:
+
+- The URL is correct
+- The gateway has Internet access
+- DNS resolution is working
+- GitHub is reachable from the gateway
+
+Try:
+
+```text
+Update Now
+```
+
+to force a refresh.
+
+---
+
+## Firewall Rule Is Not Blocking Traffic
+
+Verify:
+
+- The rule is enabled
+- The correct Network List is selected
+- The rule is positioned appropriately within the firewall policy order
+- Logging is enabled for troubleshooting
+
+---
+
+# Feed Maintenance
+
+No maintenance is required.
+
+This repository automatically:
+
+1. Downloads the latest Spamhaus DROP feeds
+2. Removes comments and metadata
+3. Generates UniFi-compatible lists
+4. Publishes updated feeds daily via GitHub Actions
+
+---
+
+# Disclaimer
 
 This repository is not affiliated with Spamhaus or Ubiquiti.
 
-The Spamhaus data remains the property of Spamhaus. This repository only reformats the feed for compatibility with UniFi Network Lists.
+Spamhaus remains the owner and maintainer of the underlying threat intelligence data. This repository only reformats the data to improve compatibility with UniFi Dynamic Network Lists.
