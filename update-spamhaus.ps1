@@ -1,8 +1,8 @@
 $url = "https://www.spamhaus.org/drop/drop.txt"
 
-$content = (Invoke-WebRequest $url).Content
+$response = Invoke-RestMethod -Uri $url
 
-$clean = $content -split "`n" |
+$clean = $response -split "`n" |
     Where-Object {
         $_ -notmatch '^;' -and $_.Trim() -ne ''
     } |
@@ -10,4 +10,4 @@ $clean = $content -split "`n" |
         ($_ -split ';')[0].Trim()
     }
 
-$clean | Set-Content spamhaus-unifi.txt
+$clean | Set-Content "spamhaus-unifi.txt"
