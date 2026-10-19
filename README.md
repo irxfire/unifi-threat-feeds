@@ -59,3 +59,13 @@ Threat intelligence data remains the property of Spamhaus and is redistributed h
 - PowerShell
 - UniFi Network Lists
 - Spamhaus DROP Feed
+
+## Documentation
+
+- [UniFi Setup Guide](./UNIFI-SETUP.md)
+
+## Quick Start
+
+Use the following URL in a UniFi Dynamic IPv4 Network List:
+
+https://raw.githubusercontent.com/irxfire/unifi-threat-feeds/main/spamhaus-unifi.txt
